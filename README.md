@@ -2,31 +2,35 @@
 It is used to manage Tasks!
 # TallyUp
 
-A friendly, lightweight task manager built with React and Vite. Add tasks, tag them by priority and category, track your progress, and celebrate every completed task with a burst of confetti.
+A friendly, lightweight task manager built with React and Vite. Add tasks tagged by priority and category, track completion progress, and get a confetti burst every time you finish something.
 
 ## Features
 
-- **Add, complete, and delete tasks** with a simple, distraction-free interface
-- **Priority tagging** (High / Medium / Low) with color-coded indicators
-- **Category tagging** (General / Personal / Work) to keep tasks organized
-- **Progress tracker** showing completed vs. total tasks with a visual progress bar
-- **Confetti celebration** triggered whenever a task is marked complete
-- **Light / Dark theme toggle** — defaults to a light theme on every load, switches to a dark theme on toggle
-- **Persistent storage** — tasks are saved to `localStorage`, so your list survives a page refresh
+- **Add tasks** with a text input, priority, and category
+- **Mark tasks complete / undo** — completed tasks show a strikethrough and reduced opacity
+- **Delete individual tasks**
+- **Clear all tasks** with a single button (only shown when there's at least one task)
+- **Priority tagging** — High, Medium, or Low, shown as a colored left border on each task
+- **Category tagging** — General, Personal, or Work
+- **Progress tracker** — shows "X of Y tasks completed" with a live-updating progress bar
+- **Empty state** — displays "No tasks yet — add one above" when the list is empty
+- **Confetti celebration** — fires via `canvas-confetti` the moment a task is marked complete
+- **Theme toggle** — a fixed button in the top-right corner switches between a light theme (default, blue accents) and a dark theme (pink accents). The theme always resets to light on refresh
+- **Persistent storage** — tasks are saved to `localStorage` and reload with the page
 
 ## Tech Stack
 
-- [React](https://react.dev/) — UI library
-- [Vite](https://vitejs.dev/) — build tool and dev server
-- [canvas-confetti](https://www.npmjs.com/package/canvas-confetti) — confetti animation on task completion
-- Plain CSS with custom properties for theming (no CSS framework)
+- [React](https://react.dev/)
+- [Vite](https://vitejs.dev/) — dev server and build tool
+- [canvas-confetti](https://www.npmjs.com/package/canvas-confetti)
+- Plain CSS using custom properties (`:root` / `body[data-theme="pink"]`) for theming — no CSS framework
 
 ## Getting Started
 
 ### Prerequisites
 
-- [Node.js](https://nodejs.org/) (v16 or later recommended)
-- npm (comes bundled with Node.js)
+- [Node.js](https://nodejs.org/) (v16 or later)
+- npm
 
 ### Installation
 
@@ -42,7 +46,7 @@ npm install
 npm run dev
 ```
 
-The app will be available at `http://localhost:5173` (or the next available port if 5173 is in use).
+Opens at `http://localhost:5173` (or the next free port if that one's taken).
 
 ### Building for production
 
@@ -50,7 +54,7 @@ The app will be available at `http://localhost:5173` (or the next available port
 npm run build
 ```
 
-The optimized production build will be output to the `dist/` folder.
+Output goes to the `dist/` folder.
 
 ## Project Structure
 
@@ -59,11 +63,11 @@ tallyup/
 ├── public/
 ├── src/
 │   ├── Components/
-│   │   ├── Taskform.jsx        # Input form for adding new tasks
-│   │   ├── Tasklist.jsx        # Renders the list of tasks
-│   │   └── Progresstracker.jsx # Progress bar and completion count
-│   ├── App.jsx                 # Root component, state management
-│   ├── App.css                 # Global styles and theme variables
+│   │   ├── Taskform.jsx        # Input field, priority/category selects, submit
+│   │   ├── Tasklist.jsx        # Renders tasks, handles complete/delete + confetti
+│   │   └── Progresstracker.jsx # Completion count and progress bar
+│   ├── App.jsx                 # Task state, theme state, top-level layout
+│   ├── App.css                 # Layout, component styles, theme variables
 │   ├── index.css
 │   └── main.jsx
 ├── index.html
@@ -73,23 +77,23 @@ tallyup/
 
 ## How It Works
 
-- Task state lives in `App.jsx` and is passed down to `Taskform`, `Tasklist`, and `Progresstracker` as props.
-- Every task is an object: `{ text, priority, category, completed }`.
-- Tasks persist across page reloads via `localStorage`.
-- Theme state toggles a `data-theme` attribute on `<body>`, which switches the CSS custom properties defined in `App.css`.
-- Confetti fires via `canvas-confetti` whenever a task's `completed` flag flips from `false` to `true`.
+- Each task is stored as an object: `{ text, priority, category, completed }`.
+- `App.jsx` owns the `tasks` array and passes `addTask`, `updateTask`, and `deleteTask` down as props.
+- `tasks` is synced to `localStorage` on every change via `useEffect`, so the list survives a page reload.
+- Theme state (`"blue"` or `"pink"`) is stored in `App.jsx` and applied by setting a `data-theme` attribute on `<body>`; `App.css` swaps CSS custom properties based on that attribute. Theme always starts as `"blue"` on load.
+- In `Tasklist.jsx`, `toggleComplete` flips a task's `completed` flag and calls `confetti()` only on the incomplete → complete transition (not on undo).
 
-## Roadmap
+## Known Limitations
 
-- [ ] Task editing (currently only add/complete/delete are supported)
-- [ ] Due dates and reminders
-- [ ] Drag-and-drop task reordering
-- [ ] Filter/sort by priority or category
+- No task editing after creation — only add, complete/undo, and delete are supported
+- No due dates, reminders, or sorting/filtering by priority or category yet
+- Tasks are stored per-browser via `localStorage`; there's no backend or cross-device sync
 
 ## Contributing
 
-Contributions are welcome. Please open an issue to discuss any significant changes before submitting a pull request.
+Issues and pull requests are welcome. Please open an issue first to discuss any significant change.
 
 ## License
 
 This project is licensed under the [MIT License](LICENSE).
+
